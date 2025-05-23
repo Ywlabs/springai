@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영우랩스 AI 챗봇 - 이력보기</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-bg: #f4f7fa;
+            --container-bg: #fff;
+            --primary: #1976d2;
+            --primary-dark: #1565c0;
+            --border: #e3e7ed;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        html {
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            html { font-size: 13px; }
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: var(--main-bg);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 480px;
+            margin: 32px auto;
+            background: var(--container-bg);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 0 0 14px 0;
+        }
+        .header {
+            background: var(--primary);
+            padding: 1rem;
+            border-radius: 18px 18px 0 0;
+        }
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .nav-item:hover {
+            background-color: var(--primary-dark);
+        }
+        .nav-item.active {
+            background-color: var(--primary-dark);
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #222;
+            padding: 22px 0 10px 0;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+        .history-container {
+            margin: 0 12px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #f9fafb;
+            min-height: 400px;
+        }
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .history-user {
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 4px;
+            max-height: 4.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            position: relative;
+        }
+        .history-assistant {
+            color: #666;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            max-height: 4.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            position: relative;
+            cursor: pointer;
+        }
+        .tooltip {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 1em;
+            border: 1px solid var(--border);
+        }
+        .tooltip-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .tooltip.active,
+        .tooltip-overlay.active {
+            display: block;
+        }
+        .tooltip-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #666;
+        }
+        .tooltip-close:hover {
+            background: #e0e0e0;
+        }
+        .tooltip-content {
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0 1rem;
+        }
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .pagination button:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .total-count {
+            text-align: center;
+            color: #666;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">챗봇문의하기</a>
+                <a href="/history" class="nav-item active">이력보기</a>
+            </nav>
+        </div>
+        <h1>채팅 이력</h1>
+        <div class="history-container" id="history-container">
+            <!-- 채팅 이력이 여기에 동적으로 추가됩니다 -->
+        </div>
+        <div class="pagination" id="pagination">
+            <!-- 페이지네이션 버튼이 여기에 동적으로 추가됩니다 -->
+        </div>
+        <div class="total-count" id="total-count">
+            <!-- 전체 건수가 여기에 표시됩니다 -->
+        </div>
+    </div>
+    <footer style="text-align:center; margin-top:12px; color:#888; font-size:0.85rem;">
+        <span>Developed by Ywlabs.com | Contact: ywlabs.com</span>
+    </footer>
+    <script>
+        let currentPage = 1;
+        const pageSize = 10;
+        let totalPages = 1;
+
+        // HTML 특수문자를 이스케이프하는 함수
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+                .replace(/\n/g, "<br>");
+        }
+
+        // JavaScript 문자열을 이스케이프하는 함수
+        function escapeJsString(text) {
+            if (!text) return '';
+            return text
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, "\\n")
+                .replace(/\r/g, "\\r")
+                .replace(/\t/g, "\\t");
+        }
+
+        // 채팅 이력을 가져오는 함수
+        async function loadChatHistory(page = 1) {
+            try {
+                const response = await fetch(`/api/chat/history/paging?page=${page}&pageSize=${pageSize}`);
+                const data = await response.json();
+                const container = document.getElementById('history-container');
+                container.innerHTML = ''; // 기존 내용 초기화
+                
+                data.chats.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    const requestDate = new Date(item.requestTime);
+                    const formattedDate = `${requestDate.getFullYear()}-${String(requestDate.getMonth() + 1).padStart(2, '0')}-${String(requestDate.getDate()).padStart(2, '0')} ${String(requestDate.getHours()).padStart(2, '0')}:${String(requestDate.getMinutes()).padStart(2, '0')}`;
+                    
+                    const escapedUserMessage = escapeHtml(item.userMessage);
+                    const escapedAssistantMessage = escapeHtml(item.assistantMessage || '응답 대기 중...');
+                    const escapedJsUserMessage = escapeJsString(item.userMessage);
+                    const escapedJsAssistantMessage = escapeJsString(item.assistantMessage || '응답 대기 중...');
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-date">${formattedDate}</div>
+                        <div class="history-user">
+                            질문: ${escapedUserMessage}
+                        </div>
+                        <div class="history-assistant" onclick="showTooltip('${formattedDate}', '답변', '${escapedJsAssistantMessage}')">
+                            답변: ${escapedAssistantMessage}
+                        </div>
+                    `;
+                    
+                    container.appendChild(historyItem);
+                });
+
+                // 페이지네이션 업데이트
+                currentPage = data.currentPage;
+                totalPages = data.totalPages;
+                updatePagination();
+                
+                // 전체 건수 표시
+                document.getElementById('total-count').textContent = `전체 ${data.totalCount}건`;
+            } catch (error) {
+                console.error('채팅 이력을 불러오는데 실패했습니다:', error);
+            }
+        }
+
+        // 페이지네이션 UI 업데이트
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // 이전 페이지 버튼
+            const prevButton = document.createElement('button');
+            prevButton.textContent = '이전';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => loadChatHistory(currentPage - 1);
+            pagination.appendChild(prevButton);
+
+            // 페이지 번호 버튼
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = i === currentPage ? 'active' : '';
+                pageButton.onclick = () => loadChatHistory(i);
+                pagination.appendChild(pageButton);
+            }
+
+            // 다음 페이지 버튼
+            const nextButton = document.createElement('button');
+            nextButton.textContent = '다음';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => loadChatHistory(currentPage + 1);
+            pagination.appendChild(nextButton);
+        }
+
+        function showTooltip(date, type, content) {
+            const tooltip = document.getElementById('tooltip');
+            const overlay = document.getElementById('tooltipOverlay');
+            const tooltipDate = document.getElementById('tooltipDate');
+            const tooltipContent = document.getElementById('tooltipContent');
+
+            tooltipDate.textContent = `${date} - ${type}`;
+            tooltipContent.innerHTML = content.replace(/\n/g, '<br>');
+            
+            tooltip.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            const overlay = document.getElementById('tooltipOverlay');
+            
+            tooltip.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // 페이지 로드 시 채팅 이력 불러오기
+        document.addEventListener('DOMContentLoaded', () => loadChatHistory(1));
+    </script>
+    <div class="tooltip-overlay" id="tooltipOverlay" onclick="hideTooltip()"></div>
+    <div class="tooltip" id="tooltip">
+        <button class="tooltip-close" onclick="hideTooltip()">×</button>
+        <div class="tooltip-date" id="tooltipDate"></div>
+        <div class="tooltip-content" id="tooltipContent"></div>
+    </div>
+</body>
+</html> 

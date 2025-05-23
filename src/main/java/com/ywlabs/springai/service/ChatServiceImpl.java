@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -81,5 +82,25 @@ public class ChatServiceImpl implements ChatService {
         }).start();
 
         return emitter;
+    }
+
+    @Override
+    public List<Chat> getChatHistory() {
+        return chatMapper.findAll();
+    }
+
+    @Override
+    public Map<String, Object> getChatHistoryWithPaging(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        List<Chat> chats = chatMapper.findAllWithPaging(offset, pageSize);
+        long totalCount = chatMapper.countTotal();
+        long totalPages = (long) Math.ceil((double) totalCount / pageSize);
+
+        return Map.of(
+            "chats", chats,
+            "totalCount", totalCount,
+            "totalPages", totalPages,
+            "currentPage", page
+        );
     }
 } 

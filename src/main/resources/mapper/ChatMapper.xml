@@ -18,4 +18,18 @@
     <select id="findById" resultType="com.ywlabs.springai.entity.Chat">
         SELECT * FROM chats WHERE id = #{id}
     </select>
+
+    <select id="findAll" resultType="com.ywlabs.springai.entity.Chat">
+        SELECT * FROM chats ORDER BY request_time DESC
+    </select>
+
+    <select id="findAllWithPaging" resultType="com.ywlabs.springai.entity.Chat">
+        SELECT * FROM chats 
+        ORDER BY request_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*) FROM chats
+    </select>
 </mapper> 

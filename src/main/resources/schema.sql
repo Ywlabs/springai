@@ -6,4 +6,16 @@ CREATE TABLE IF NOT EXISTS chats (
     response_time TIMESTAMP,
     status VARCHAR(20) NOT NULL,
     error_message VARCHAR(1000)
-); 
+);
+
+CREATE TABLE IF NOT EXISTS employees (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    position VARCHAR(50),
+    dept_nm VARCHAR(50),
+    sns VARCHAR(200),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
