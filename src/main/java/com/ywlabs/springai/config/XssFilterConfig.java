@@ -1,4 +1,4 @@
-package com.example.chatgptsse.config;
+package com.ywlabs.springai.config;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

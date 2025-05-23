@@ -1,4 +1,4 @@
-package com.example.chatgptsse.service;
+package com.ywlabs.springai.service;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

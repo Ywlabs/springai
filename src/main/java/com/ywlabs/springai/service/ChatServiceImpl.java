@@ -1,7 +1,7 @@
-package com.example.chatgptsse.service;
+package com.ywlabs.springai.service;
 
-import com.example.chatgptsse.entity.Chat;
-import com.example.chatgptsse.mapper.ChatMapper;
+import com.ywlabs.springai.entity.Chat;
+import com.ywlabs.springai.mapper.ChatMapper;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -27,24 +28,20 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public SseEmitter streamChat(String message) {
         SseEmitter emitter = new SseEmitter();
-        
-        // Save initial request
-        final Chat chat = new Chat();
-        chat.setUserMessage(message);
-        chat.setStatus("REQUESTED");
-        chat.setRequestTime(LocalDateTime.now());
-        chatMapper.insert(chat);
-        
-        new Thread(() -> {
-            try {
-                AtomicReference<StringBuilder> responseBuilder = new AtomicReference<>(new StringBuilder());
+        AtomicReference<StringBuilder> responseBuilder = new AtomicReference<>(new StringBuilder());
 
-                Prompt prompt = new Prompt(
-                    java.util.List.of(
-                        new SystemMessage("모든 답변은 자연스러운 한국어 문장으로, 띄어쓰기를 정확히 지켜서 작성해 주세요."),
-                        new UserMessage(message)
-                    )
-                );
+        new Thread(() -> {
+            Chat chat = Chat.getInstance();
+            try {
+                chat.reset();
+                chat.setUserMessage(message);
+                chat.setRequestTime(LocalDateTime.now());
+                chat.setStatus("REQUESTED");
+                chatMapper.insert(chat);
+
+                SystemMessage systemMessage = new SystemMessage("You are a helpful assistant.");
+                UserMessage userMessage = new UserMessage(message);
+                Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
 
                 chatClient.stream(prompt)
                         .doOnError(error -> {

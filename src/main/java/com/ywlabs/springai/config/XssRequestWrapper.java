@@ -1,6 +1,6 @@
-package com.example.chatgptsse.config;
+package com.ywlabs.springai.config;
 
-import com.example.chatgptsse.util.XssFilterUtil;
+import com.ywlabs.springai.util.XssFilterUtil;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;

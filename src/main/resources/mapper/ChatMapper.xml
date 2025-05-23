@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.chatgptsse.mapper.ChatMapper">
-    <insert id="insert" parameterType="com.example.chatgptsse.entity.Chat" useGeneratedKeys="true" keyProperty="id">
+<mapper namespace="com.ywlabs.springai.mapper.ChatMapper">
+    <insert id="insert" parameterType="com.ywlabs.springai.entity.Chat" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO chats (user_message, status, request_time)
         VALUES (#{userMessage}, #{status}, #{requestTime})
     </insert>
 
-    <update id="update" parameterType="com.example.chatgptsse.entity.Chat">
+    <update id="update" parameterType="com.ywlabs.springai.entity.Chat">
         UPDATE chats
         SET status = #{status},
             assistant_message = #{assistantMessage},
@@ -15,7 +15,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="findById" resultType="com.example.chatgptsse.entity.Chat">
+    <select id="findById" resultType="com.ywlabs.springai.entity.Chat">
         SELECT * FROM chats WHERE id = #{id}
     </select>
 </mapper> 

@@ -1,4 +1,4 @@
-package com.example.chatgptsse.util;
+package com.ywlabs.springai.util;
 
 import org.springframework.util.StringUtils;
 

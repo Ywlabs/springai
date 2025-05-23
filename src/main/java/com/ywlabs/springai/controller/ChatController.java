@@ -1,6 +1,6 @@
-package com.example.chatgptsse.controller;
+package com.ywlabs.springai.controller;
 
-import com.example.chatgptsse.service.ChatService;
+import com.ywlabs.springai.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
